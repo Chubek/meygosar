@@ -1,39 +1,38 @@
 package com.chubak.meygosar;
 
-import java.util.UUID;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
-public class Location implements DatabaseObject {
-    private int shelf;
-    private int row;
-    private int column;
+import java.sql.*;
+import java.util.UUID;
+
+public class Props implements DatabaseObject {
+    private String name;
+    private WineType wineType;
+    private int year;
     public String uuid;
 
-    public Location(int shelf, int row, int column) {
-        this.shelf = shelf;
-        this.row = row;
-        this.column = column;
+    public Props(String name, int year, WineType wineType) {
+
+        this.name = name;
+        this.year = year;
+        this.wineType = wineType;
         this.uuid = UUID.randomUUID().toString();
+
         insertIntoDatabase();
     }
 
-    public Location(String uuid) {
+    public Props(String uuid) {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:meygosar.db");
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30);
 
-            ResultSet rs = statement.executeQuery(String.format("SELECT * FROM Locations WHERE UUID='%s'", uuid));
+            ResultSet rs = statement.executeQuery(String.format("SELECT * FROM Props WHERE UUID='%s'", uuid));
             while (rs.next()) {
 
-                this.shelf = rs.getInt("Shelf");
-                this.row = rs.getInt("Row");
-                this.column = rs.getInt("Column");
+                this.year = rs.getInt("Year");
+                this.name = rs.getString("Name");
+                this.wineType = WineType.valueOf(rs.getString("WineType"));
                 this.uuid = uuid;
 
             }
@@ -51,6 +50,7 @@ public class Location implements DatabaseObject {
 
     }
 
+
     @Override
     public void insertIntoDatabase() {
         Connection connection = null;
@@ -59,12 +59,13 @@ public class Location implements DatabaseObject {
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30);
 
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS Location(" +
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS Props(" +
                     "UUID varchar(255)" +
-                    "Shelf int" +
-                    "Row int" +
-                    "Column int)");
-            statement.executeUpdate(String.format("INSERT INTO Location (UUID, Shelf, Row, Column) VALUES (%s, %s, %s, %s)", this.uuid, this.shelf, this.row, this.column));
+                    "Name varchar(255)" +
+                    "Year int" +
+                    "WineType varchar(255)");
+            statement.executeUpdate(String.format("INSERT INTO Location (UUID, Name, Year, WineType) VALUES (%s, %s, %s, %s)",
+                    this.uuid, this.name, this.year, this.wineType.name()));
 
 
         } catch (SQLException e) {
@@ -79,17 +80,5 @@ public class Location implements DatabaseObject {
             }
         }
 
-    }
-
-    public int getShelf() {
-        return this.shelf;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public int getColumn() {
-        return column;
     }
 }

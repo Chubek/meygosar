@@ -6,6 +6,7 @@ public class Wine {
     private String date;
     private Style style;
     private Inventory inventory;
-    private Price price;
+    private Float price;
     private Taste taste;
+    private Props props;
 }
