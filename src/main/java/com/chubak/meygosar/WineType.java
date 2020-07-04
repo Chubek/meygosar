@@ -86,5 +86,6 @@ public enum WineType {
     Verdicchio,
     Viognier,
     Zinfandel,
+    Other,
 
 }

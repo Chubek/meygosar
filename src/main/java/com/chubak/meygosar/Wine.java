@@ -9,4 +9,7 @@ public class Wine {
     private Float price;
     private Taste taste;
     private Props props;
+    private IDHolder uuids;
+
+
 }
